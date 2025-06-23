@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dispositivos Sin Asignar</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>Dispositivos Sin Asignar</h1>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+<form method="get" class="filtros">
+    <label><input type="checkbox" name="sin_ubicacion" {% if request.GET.sin_ubicacion %}checked{% endif %}> Sin ubicación</label>
+    <label><input type="checkbox" name="sin_responsable" {% if request.GET.sin_responsable %}checked{% endif %}> Sin responsable</label>
+    <button type="submit">Filtrar</button>
+</form>
+
+    <form method="post">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Número de Activo</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Serie</th>
+                    <th>Ubicación</th>
+                    <th>Responsable</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dispositivo in dispositivos %}
+                <tr>
+                    <td><input type="checkbox" name="dispositivos" value="{{ dispositivo.id }}"></td>
+                    <td>{{ dispositivo.numero_activo }}</td>
+                    <td>{{ dispositivo.descripcion }}</td>
+                    <td>{{ dispositivo.marca }}</td>
+                    <td>{{ dispositivo.modelo }}</td>
+                    <td>{{ dispositivo.serie }}</td>
+                    <td>{{ dispositivo.ubicacion.nombre|default:"Sin ubicación" }}</td>
+                    <td>
+                        {% if dispositivo.responsable %}
+                            {{ dispositivo.responsable.get_full_name|default:dispositivo.responsable.username }}
+                        {% else %}
+                            Sin responsable
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8">No hay dispositivos sin asignación según el filtro.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Asignar en bloque</h3>
+        <label for="ubicacion">Nueva ubicación:</label>
+        <select name="ubicacion" id="ubicacion">
+            <option value="">-- No cambiar --</option>
+            {% for u in ubicaciones %}
+                <option value="{{ u.id }}">{{ u.nombre }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="responsable">Nuevo responsable:</label>
+        <select name="responsable" id="responsable">
+            <option value="">-- No cambiar --</option>
+            {% for user in responsables %}
+                <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+        <button type="submit">Aplicar cambios</button>
+    </form>
+
+    <br>
+    <a href="{% url 'lista_dispositivos' %}">← Volver a la lista</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dispositivos</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Dispositivos</h1>
+
+        <form method="get">
+            <input type="text" name="q" placeholder="Buscar dispositivo..." value="{{ query }}">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Número de Activo</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Serie</th>
+                    <th>Ubicación</th>
+                    <th>Operación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dispositivo in dispositivos %}
+                   <tr>
+                      <td>{{ dispositivo.numero_activo }}</td>
+                      <td>{{ dispositivo.descripcion }}</td>
+                      <td>{{ dispositivo.marca }}</td>
+                      <td>{{ dispositivo.modelo }}</td>
+                      <td>{{ dispositivo.serie }}</td>
+                      <td>
+                        {% if dispositivo.ubicacion %}
+                          <a href="{% url 'dispositivos_por_ubicacion' dispositivo.ubicacion.id %}">
+                            {{ dispositivo.ubicacion.nombre }}
+                          </a>
+                        {% else %}
+                          Sin ubicación
+                        {% endif %}
+                      </td>
+	              <td>
+                         <a href="{% url 'detalle_dispositivo' dispositivo.numero_activo %}">Ver detalles</a> |
+                         <a href="{% url 'editar_dispositivo' dispositivo.id %}">Editar</a>
+                     </td>
+                 </tr>
+             {% empty %}
+                 <tr><td colspan="6">No se encontraron dispositivos.</td></tr>
+             {% endfor %}
+         </tbody>            
+        </table>
+    </div>
+</body>
+</html>

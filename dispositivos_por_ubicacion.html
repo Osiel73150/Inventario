@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dispositivos en {{ ubicacion.nombre }}</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Dispositivos en {{ ubicacion.nombre }}</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Número de Activo</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Serie</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dispositivo in dispositivos %}
+                <tr>
+                    <td>{{ dispositivo.numero_activo }}</td>
+                    <td>{{ dispositivo.descripcion }}</td>
+                    <td>{{ dispositivo.marca }}</td>
+                    <td>{{ dispositivo.modelo }}</td>
+                    <td>{{ dispositivo.serie }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No hay dispositivos en esta ubicación.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <a href="{% url 'lista_dispositivos' %}">← Volver a la lista</a>
+    </div>
+</body>
+</html>

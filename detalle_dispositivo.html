@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Dispositivo</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <style>
+        .historial-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .historial-table th, .historial-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .historial-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .historial-section {
+            margin-top: 30px;
+        }
+        .sin-cambio {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalle del Dispositivo</h1>
+        
+        <!-- Información actual del dispositivo -->
+        <table>
+            <tr>
+                <th>Número de Activo</th>
+                <td>{{ dispositivo.numero_activo }}</td>
+            </tr>
+            <tr>
+                <th>Descripción</th>
+                <td>{{ dispositivo.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Marca</th>
+                <td>{{ dispositivo.marca }}</td>
+            </tr>
+            <tr>
+                <th>Modelo</th>
+                <td>{{ dispositivo.modelo }}</td>
+            </tr>
+            <tr>
+                <th>Serie</th>
+                <td>{{ dispositivo.serie }}</td>
+            </tr>
+            <tr>
+                <th>Ubicación</th>
+                <td>
+                    {% if dispositivo.ubicacion %}
+                        {{ dispositivo.ubicacion.nombre }}
+                    {% else %}
+                        Sin ubicación
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Responsable</th>
+                <td>
+                    {% if dispositivo.responsable %}
+                        {{ dispositivo.responsable.get_full_name|default:dispositivo.responsable.username }}
+                    {% else %}
+                        Sin asignar
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Historial de cambios -->
+        <div class="historial-section">
+            <h2>Últimos 5 Cambios</h2>
+            
+            {% if ultimos_movimientos %}
+                <table class="historial-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Ubicación Anterior</th>
+                            <th>Ubicación Nueva</th>
+                            <th>Responsable Anterior</th>
+                            <th>Responsable Nuevo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movimiento in ultimos_movimientos %}
+                        <tr>
+                            <td>{{ movimiento.fecha|date:"Y-m-d H:i" }}</td>
+                            <td>{{ movimiento.usuario.get_full_name|default:movimiento.usuario.username }}</td>
+                            <td>
+                                {% if movimiento.ubicacion_anterior %}
+                                    {{ movimiento.ubicacion_anterior.nombre }}
+                                {% else %}
+                                    <span class="sin-cambio">-----------</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if movimiento.ubicacion_nueva %}
+                                    {{ movimiento.ubicacion_nueva.nombre }}
+                                {% else %}
+                                    <span class="sin-cambio">-----------</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if movimiento.responsable_anterior %}
+                                    {{ movimiento.responsable_anterior.get_full_name|default:movimiento.responsable_anterior.username }}
+                                {% else %}
+                                    <span class="sin-cambio">-----------</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if movimiento.responsable_nuevo %}
+                                    {{ movimiento.responsable_nuevo.get_full_name|default:movimiento.responsable_nuevo.username }}
+                                {% else %}
+                                    <span class="sin-cambio">-----------</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="sin-cambio">No se han registrado cambios para este dispositivo.</p>
+            {% endif %}
+        </div>
+
+        <br>
+        <a href="{% url 'editar_dispositivo' dispositivo.pk %}">✏️ Editar dispositivo</a> |
+        <a href="{% url 'lista_dispositivos' %}">← Volver a la lista</a>
+    </div>
+</body>
+</html>
